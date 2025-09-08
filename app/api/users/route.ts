@@ -33,6 +33,7 @@ export async function POST(req: Request) {
       username: data[0],
       password: data[1],
       coins: Number(data[2]),
+      money: Number(data[3]),
     };
 
     const userExisting = await db

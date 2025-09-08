@@ -5,4 +5,5 @@ export const usersTable = pgTable("users", {
   username: varchar({ length: 255 }).notNull(),
   password: varchar().notNull(),
   coins: integer().notNull(),
+  money: integer().notNull(),
 });
