@@ -14,18 +14,26 @@ export async function GET() {
 
   const discounted = Math.floor(coins * 0.8); // trừ 20%
 
+  // tổng số account
+  const totalUsers = data.length;
+
+  // số account có coins > 3.000.000
+  const richUsers = data.filter((item) => item.coins > 3_000_000).length;
+
   return NextResponse.json({
-    total: coins.toLocaleString("en-US"), // có dấu phẩy
-    afterDiscount: discounted.toLocaleString("en-US"), // có dấu phẩy
+    total: coins.toLocaleString("en-US"),
+    afterDiscount: discounted.toLocaleString("en-US"),
     message: `Total coins after -20%: ${discounted.toLocaleString("en-US")}`,
+    accountMessage: `Tài khoản giàu: ${richUsers}/${totalUsers}`, // hiển thị kiểu 5/20
   });
 }
+
 export async function POST(req: Request) {
   try {
-    const body = await req.text(); // ví dụ: "john|123456|100"
+    const body = await req.text(); // ví dụ: "john|123456|100|500"
     const data = body.split("|");
 
-    if (data.length < 3) {
+    if (data.length < 4) {
       return NextResponse.json({ error: "Invalid input" }, { status: 400 });
     }
 
@@ -44,15 +52,15 @@ export async function POST(req: Request) {
     if (userExisting.length > 0) {
       await db
         .update(usersTable)
-        .set({ coins: user.coins })
+        .set({ coins: user.coins, money: user.money })
         .where(eq(usersTable.username, user.username))
-        .returning(); // trả về record đã update
+        .returning();
     } else {
       await db.insert(usersTable).values(user);
     }
 
     console.log("Inserted:", user);
-    return NextResponse.json({ message: "User created", user });
+    return NextResponse.json({ message: "User created/updated", user });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
