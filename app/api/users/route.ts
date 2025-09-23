@@ -7,24 +7,8 @@ import { NextResponse } from "next/server";
 export async function GET() {
   const data = await db.select().from(usersTable);
 
-  let coins = 0;
-  data.forEach((item) => {
-    coins += item.coins;
-  });
-
-  const discounted = Math.floor(coins * 0.8); // trừ 20%
-
-  // tổng số account
-  const totalUsers = data.length;
-
-  // số account có coins > 3.000.000
-  const richUsers = data.filter((item) => item.coins > 3_000_000).length;
-
   return NextResponse.json({
-    total: coins.toLocaleString("en-US"),
-    afterDiscount: discounted.toLocaleString("en-US"),
-    message: `Total coins after -20%: ${discounted.toLocaleString("en-US")}`,
-    accountMessage: `Tài khoản giàu: ${richUsers}/${totalUsers}`, // hiển thị kiểu 5/20
+    data: data,
   });
 }
 
